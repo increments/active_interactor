@@ -1,5 +1,11 @@
 # ActiveInteractor
 
+[![Gem](https://img.shields.io/gem/v/active_interactor.svg)](https://rubygems.org/gems/active_interactor)
+[![Build Status](https://travis-ci.org/increments/active_interactor.svg?branch=master)](https://travis-ci.org/increments/active_interactor)
+[![Code Climate](https://codeclimate.com/github/increments/active_interactor/badges/gpa.svg)](https://codeclimate.com/github/increments/active_interactor)
+[![Test Coverage](https://codeclimate.com/github/increments/active_interactor/badges/coverage.svg)](https://codeclimate.com/github/increments/active_interactor/coverage)
+[![license](https://img.shields.io/github/license/increments/active_interactor.svg)](https://github.com/increments/active_interactor/blob/master/LICENSE)
+
 Simple use case interactor for Rails apps based on ActiveModel.
 
 It is heavily inspired by [Hanami::Interactor](http://hanamirb.org/guides/1.2/architecture/interactors/).
