@@ -1,4 +1,10 @@
 require 'bundler/setup'
+
+require 'simplecov'
+SimpleCov.start do
+  add_filter '/spec/'
+end
+
 require 'active_interactor'
 
 RSpec.configure do |config|
