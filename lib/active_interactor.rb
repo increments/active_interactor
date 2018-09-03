@@ -1,8 +1,29 @@
-require "active_support"
-require "active_model"
+require 'active_support'
+require 'active_model'
 
-require "active_interactor/version"
+require 'active_interactor/version'
 
+# ActiveInteractor.
+#
+# @example
+#   class CreateProduct
+#     include ActiveInteractor
+#
+#     expose :product
+#
+#     validations(:name, :price) do
+#       validates :name, presence: true, length: { maximum: 50 }
+#       validates :price, presence: true, numericality: { only_integer: true }
+#     end
+#
+#     def initialize(repository)
+#       @repository = repository
+#     end
+#
+#     def call(attributes)
+#       @product = @repository.create(attributes)
+#     end
+#   end
 module ActiveInteractor
   extend ActiveSupport::Concern
 
@@ -63,7 +84,7 @@ module ActiveInteractor
 
         # @note Override {ActiveModel::Translation::ClassMethods#i18n_scope}
         def self.i18n_scope
-          :active_interactor
+          :activeinteractor
         end
       end
       klass.name = name || 'ActiveInteractor' # Fallback for anonymous classes
@@ -78,11 +99,13 @@ module ActiveInteractor
 
   # Interactor interface.
   module Interface
+    # rubocop:disable all
+
     # @param args [Array<(nil)>, Array<(Hash)>]
     # @return [ActiveInteractor::Result]
     def call(*args)
-      fail ArgumentError if args.size > 1
-      fail ArgumentError if args.size == 1 && !args.first.is_a?(Hash)
+      raise ArgumentError if args.size > 1
+      raise ArgumentError if args.size == 1 && !args.first.is_a?(Hash)
 
       params = args.extract_options!
       validator = self.class.validator_class.new
@@ -98,6 +121,8 @@ module ActiveInteractor
 
       Result.new(result_payload, @errors)
     end
+
+    # rubocop:enable all
   end
 
   # Result of an operation.
@@ -108,7 +133,7 @@ module ActiveInteractor
     # Concrete methods
     #
     # @see ActiveInteractor::Result#respond_to_missing?
-    METHODS = Set.new([:initialize, :success?, :failure?])
+    METHODS = Set.new(%i[initialize success? failure?])
 
     # @param payload [Hash]
     # @param errors [ActiveModel::Errors]
@@ -140,7 +165,7 @@ module ActiveInteractor
   end
 
   def call(*)
-    fail NotImplementedError
+    raise NotImplementedError
   end
 
   # Merge the given errors into {#errors}.
