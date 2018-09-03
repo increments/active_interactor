@@ -6,7 +6,7 @@ Gem::Specification.new do |spec|
   spec.name          = 'active_interactor'
   spec.version       = ActiveInteractor::VERSION
   spec.authors       = ['Yuku TAKAHASHI']
-  spec.email         = ['taka84u9@gmail.com']
+  spec.email         = ['yuku@qiita.com']
 
   spec.summary       = 'Simple use case interactor for Rails apps based on ActiveModel'
   spec.homepage      = 'https://github.com/yuku/active_interactor'
