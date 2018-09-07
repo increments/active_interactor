@@ -86,6 +86,18 @@ module ActiveInteractor
         def self.i18n_scope
           :activeinteractor
         end
+
+        # @param [ActiveInteractor]
+        def initialize(interactor)
+          @__interactor = interactor
+        end
+
+        # @return [ActiveInteractor]
+        # @note This method will be overridden if it is declared to validate :interactor attribute.
+        def interactor
+          @__interactor
+        end
+        alias_method :__interactor, :interactor
       end
       klass.name = name || 'ActiveInteractor' # Fallback for anonymous classes
       klass
@@ -108,7 +120,6 @@ module ActiveInteractor
       raise ArgumentError if args.size == 1 && !args.first.is_a?(Hash)
 
       params = args.extract_options!
-      validator = self.class.validator_class.new
 
       if params.empty? && !self.class.validation_required?
         @errors = validator.errors
@@ -178,6 +189,10 @@ module ActiveInteractor
     end
   end
 
+  def validator
+    @validator ||= self.class.validator_class.new(self)
+  end
+
   private # rubocop:disable Lint/UselessAccessModifier
 
   # @return [Hash] a hash representing a payload for {ActiveInteractor::Result}
@@ -192,7 +207,6 @@ module ActiveInteractor
   # @param args [Hash]
   # @return [ActiveModel::Errors]
   def validate(params)
-    validator = self.class.validator_class.new
     if self.class.validation_required?
       validator.assign_attributes(params)
       validator.valid?

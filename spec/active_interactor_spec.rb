@@ -114,4 +114,38 @@ RSpec.describe ActiveInteractor do
     expect(result).to be_failure
     expect(result.errors.full_messages).to eq ['custom error message']
   end
+
+  example 'accessing interactor from validator' do
+    interactor_class = Class.new do
+      include ActiveInteractor
+
+      validations(:target_user) do
+        validates :target_user, presence: true
+        validate :user_must_not_follow_target_user
+
+        def user_must_not_follow_target_user
+          errors.add(:target_user, :already_following) if interactor.user.follow?(target_user)
+        end
+      end
+
+      attr_reader :user
+
+      def initialize(user)
+        @user = user
+      end
+
+      def call(target_user:)
+        user.follow(target_user)
+      end
+    end
+
+    user = double('User')
+    allow(user).to receive(:follow?).and_return(true)
+    allow(user).to receive(:follow)
+    target_user = double('User')
+    result = interactor_class.new(user).call(target_user: target_user)
+    expect(result).to be_failure
+    expect(user).to have_received(:follow?).with(target_user).once
+    expect(user).not_to have_received(:follow)
+  end
 end

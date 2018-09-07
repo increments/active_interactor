@@ -137,6 +137,33 @@ result.success? #=> false
 result.errors.full_messages_for(:name) #=> ["name can't be blank"]
 ```
 
+Validator can access interactor instance via `#interactor`:
+
+```rb
+class FollowUser
+  include ActiveInteractor
+
+  validations(:target_user) do
+    validates :target_user, presence: true
+    validate :user_must_not_follow_target_user
+
+    def user_must_not_follow_target_user
+      errors.add(:target_user, :already_following) if interactor.user.follow?(target_user)
+    end
+  end
+
+  attr_reader :user
+
+  def initialize(user)
+    @user = user
+  end
+
+  def call(target_user:)
+    user.follow(target_user)
+  end
+end
+```
+
 ### I18n
 
 ```yaml
