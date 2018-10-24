@@ -8,6 +8,7 @@ notifications:
 script:
   - bundle exec rake rubocop
   - bundle exec rake spec
+  - bundle exec yard doc --fail-on-warning
 
 after_success:
   - bundle exec codeclimate-test-reporter
