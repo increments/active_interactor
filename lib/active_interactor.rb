@@ -94,7 +94,6 @@ module ActiveInteractor
 
   included do
     prepend ActiveInteractor::Interface
-    attr_reader :errors
   end
 
   # Interactor interface.
@@ -168,6 +167,11 @@ module ActiveInteractor
     raise NotImplementedError
   end
 
+  # @return [ActiveModel::Errors]
+  def errors
+    @errors
+  end
+
   # Merge the given errors into {#errors}.
   #
   # @param additional_errors [ActiveModel::Errors]
@@ -189,7 +193,7 @@ module ActiveInteractor
     end
   end
 
-  # @param args [Hash]
+  # @param params [Hash]
   # @return [ActiveModel::Errors]
   def validate(params)
     validator = self.class.validator_class.new
