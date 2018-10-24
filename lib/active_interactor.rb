@@ -27,7 +27,7 @@ require 'active_interactor/version'
 module ActiveInteractor
   extend ActiveSupport::Concern
 
-  class_methods do
+  module ClassMethods
     # Configure {.validator_class}
     #
     # @param attribute_names [Array<Symbol>] list of
@@ -107,18 +107,17 @@ module ActiveInteractor
       raise ArgumentError if args.size == 1 && !args.first.is_a?(Hash)
 
       params = args.extract_options!
-      validator = self.class.validator_class.new
+      errors.clear
 
       if params.empty? && !self.class.validation_required?
-        @errors = validator.errors
         super
       else
         params = sanitize(params)
-        @errors = validate(params)
-        super(params) if @errors.empty?
+        validate(params)
+        super(params) if errors.empty?
       end
 
-      Result.new(result_payload, @errors)
+      Result.new(result_payload, errors)
     end
 
     # rubocop:enable all
@@ -169,7 +168,7 @@ module ActiveInteractor
 
   # @return [ActiveModel::Errors]
   def errors
-    @errors
+    validator.errors
   end
 
   # Merge the given errors into {#errors}.
@@ -182,7 +181,12 @@ module ActiveInteractor
     end
   end
 
-  private # rubocop:disable Lint/UselessAccessModifier
+  # @return [ActiveModel::Validations] an instance of {ActiveInteractor::ClassMethods#validator_class}
+  def validator
+    @validator ||= self.class.validator_class.new
+  end
+
+  private
 
   # @return [Hash] a hash representing a payload for {ActiveInteractor::Result}
   def result_payload
@@ -194,14 +198,12 @@ module ActiveInteractor
   end
 
   # @param params [Hash]
-  # @return [ActiveModel::Errors]
+  # @return [void]
   def validate(params)
-    validator = self.class.validator_class.new
-    if self.class.validation_required?
-      validator.assign_attributes(params)
-      validator.valid?
-    end
-    validator.errors
+    return unless self.class.validation_required?
+
+    validator.assign_attributes(params)
+    validator.valid?
   end
 
   # Remove undeclared keys from the given params.

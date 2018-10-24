@@ -114,4 +114,25 @@ RSpec.describe ActiveInteractor do
     expect(result).to be_failure
     expect(result.errors.full_messages).to eq ['custom error message']
   end
+
+  example 'using #validator' do
+    interactor_class = Class.new do
+      include ActiveInteractor
+
+      validations do
+        def something
+          1
+        end
+      end
+
+      expose :exposure
+
+      def call
+        @exposure = validator.something
+      end
+    end
+
+    result = interactor_class.new.call
+    expect(result.exposure).to eq 1
+  end
 end
