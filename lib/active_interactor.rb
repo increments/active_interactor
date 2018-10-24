@@ -206,6 +206,7 @@ module ActiveInteractor
   # @return [Hash]
   def sanitize(params)
     return params unless self.class.validation_required?
+
     Hash[].tap do |result|
       self.class.validation_attribute_names.each do |name|
         result[name] = params[name]
